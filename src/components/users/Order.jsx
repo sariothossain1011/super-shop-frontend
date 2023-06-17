@@ -31,23 +31,23 @@ const Order = () => {
                       <thead>
                         <tr>
                           <th scope="col">No:</th>
-                          <th scope="col">Status</th>
-                          <th scope="col">Buyer</th>
-                          <th scope="col">Ordered</th>
+                          <th scope="col" >Status</th>
+                          {/* <th scope="col">Buyer</th> */}
+                          <th scope="col" className="hide-div">Ordered</th>
                           <th scope="col">Payment</th>
-                          <th scope="col">Quantity</th>
+                          <th scope="col" className="hide-div">Quantity</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>{i + 1}</td>
+                          <td> {i + 1}</td>
                           <td>{item?.status}</td>
-                          <td>{item?.buyer?.name}</td>
-                          <td>{moment(item?.createdAt).fromNow()}</td>
+                          {/* <td>{item?.buyer?.name}</td> */}
+                          <td className="hide-div">{moment(item?.createdAt).fromNow()}</td>
                           <td>
                             {item?.payment?.success ? "Success" : "Failed"}
                           </td>
-                          <td>{item?.products?.length} products</td>
+                          <td className="hide-div">{item?.products?.length} products</td>
                         </tr>
                       </tbody>
                     </table>
@@ -56,7 +56,7 @@ const Order = () => {
               })
             ) : (
               <div className="position-absolute top-50 start-50 translate-middle">
-                <h1>Now here not data</h1>
+                <h2>Now here not data</h2>
                 <div className="text-center m-2"><Link to="/" className=" btn btn-success">Shopping Continue</Link></div>
               </div>
             )}

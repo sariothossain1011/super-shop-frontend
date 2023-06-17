@@ -17,7 +17,7 @@ const Cart = () => {
     setCartData(myCart);
   };
 
-  if(cart !== 0){
+  if (cart.length > 0) {
     return (
       <Fragment>
         <div className="container-fluid bg-lightgray">
@@ -43,11 +43,12 @@ const Cart = () => {
                                 <span className="card-text">
                                   {item.description}
                                 </span>
-                                <span className="card-text">{item.price}</span>
-                                <span className="card-text">{item.quantity}</span>
+                                <p className="card-text"> Price : {item.price}</p>
+                                <span className="card-text">
+                                </span>
                               </div>
                             </div>
-                            <div className="col-md-2">
+                            <div className="col-md-2 ">
                               <button
                                 className="btn btn-warning"
                                 onClick={() => removeFromCart(item._id)}
@@ -60,7 +61,9 @@ const Cart = () => {
                       );
                     })
                   ) : (
-                    <div>No items in the cart.</div>
+                    <div className="p-5">
+                      <h2>Empty Carts Section</h2>
+                    </div>
                   )}
                 </div>
                 <div className="col-md-5">
@@ -72,11 +75,17 @@ const Cart = () => {
         </div>
       </Fragment>
     );
-  }else{
-    <div className="position-absolute top-50 start-50 translate-middle">
-                <h1>Now here not data</h1>
-                <div className="text-center m-2"><Link to="/" className=" btn btn-success">Shopping Continue</Link></div>
-              </div>
+  } else {
+    return (
+      <div className="position-absolute top-50 start-50 translate-middle">
+        <h2>Now here not data</h2>
+        <div className="text-center m-2">
+          <Link to="/" className=" btn btn-success">
+            Shopping Continue
+          </Link>
+        </div>
+      </div>
+    );
   }
 };
 
