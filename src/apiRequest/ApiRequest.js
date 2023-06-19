@@ -1,10 +1,9 @@
 import { ErrorToast, SuccessToast } from "../helper/FormHelper";
-import { getToken, setToken, setUserDetails } from "../helper/SessionHelper";
+import { setToken, setUserDetails } from "../helper/SessionHelper";
 
 import axios from "axios";
 import { BASE_URL } from "../helper/config";
 
-const AxiosHeader={headers:{"token":getToken()}}
 
 export async function RegistrationRequest(email, name, password) {
   try {
@@ -43,6 +42,8 @@ export async function LoginRequest(email, password) {
     return false;
   }
 }
+
+
 
 export async function ProductsRequest() {
   try {
@@ -102,62 +103,6 @@ export async function ProductRequest(id) {
     }
   } catch (error) {
     console.log(error);
-    ErrorToast("not found data");
-    return false;
-  }
-}
-
-export async function ProcessPaymentRequest(nonce, cart) {
-  try {
-    let URL = `${BASE_URL}/braintree/payment`;
-    let PostBody = { nonce: nonce, cart: cart };
-    let res = await axios.post(URL,PostBody,AxiosHeader);
-    if (res.data['status'] === "success" ) {
-      SuccessToast("ProcessPaymentRequest find Success");
-      return res.data['data']
-      // return true;
-    } else {
-      ErrorToast("Something Went Wrong");
-      return false;
-    }
-  } catch (error) {
-    console.log(error)
-    ErrorToast("not found data");
-    return false;
-  }
-}
-
-export async function GetPaymentTokenRequest() {
-  try {
-    let URL = `${BASE_URL}/braintree/token`;
-    let res = await axios.get(URL,AxiosHeader)
-    if (res.data["status"] === "success") {
-      SuccessToast("Process Payment Success");
-      return res.data["data"];
-    } else {
-      ErrorToast("Something Went Wrong");
-      return false;
-    }
-  } catch (error) {
-    ErrorToast("not found data");
-    return false;
-  }
-}
-
-
-
-export async function GetOrderRequest() {
-  try {
-    let URL = `${BASE_URL}/getOrders`;
-    let res = await axios.get(URL,AxiosHeader)
-    if (res.data["status"] === "success") {
-      SuccessToast("get all orders");
-      return res.data["data"];
-    } else {
-      ErrorToast("Something Went Wrong");
-      return false;
-    }
-  } catch (error) {
     ErrorToast("not found data");
     return false;
   }

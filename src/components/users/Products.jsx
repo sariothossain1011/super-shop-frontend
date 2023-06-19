@@ -30,7 +30,7 @@ const Products = () => {
             {products ? (
               products.map((item, i) => {
                 return (
-                  <div className="col-lg-3 col-md-4 col-sm-6 p-3">
+                  <div className="col-lg-4 col-md-6 col-sm-12 p-3">
                     <div className="card p-3">
                       <img
                         className="card-img-top"

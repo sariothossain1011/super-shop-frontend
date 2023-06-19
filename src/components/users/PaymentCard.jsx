@@ -1,41 +1,90 @@
 import axios from "axios";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { BASE_URL } from "../../helper/config";
 import { ErrorToast, SuccessToast } from "../../helper/FormHelper";
-import {
-  GetPaymentTokenRequest,
-  ProcessPaymentRequest,
-} from "../../apiRequest/ApiRequest";
 import DropIn from "braintree-web-drop-in-react";
 import { useCart } from "../context/CartContext";
-import { getCartData, removeCartData } from "../../helper/SessionHelper";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  getUserDetails,
+  removeCartData,
+  setUserDetails,
+} from "../../helper/SessionHelper";
+import { useNavigate } from "react-router-dom";
 
 const PaymentCard = () => {
+  let addressRef = useRef();
+
   const navigate = useNavigate();
   const [auth, setAuth] = useAuth();
   const [clientToken, setClientToken] = useState("");
   const [instance, setInstance] = useState("");
   const [cart, setCart] = useCart();
-  // alert(clientToken)
 
   useEffect(() => {
-    (async () => {
-      if (auth?.token) {
-        // token
-        const token = await GetPaymentTokenRequest();
-        setClientToken(token?.clientToken);
+    const fetchClientToken = async () => {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${auth?.token}`,
+          },
+        };
+
+        if (auth?.token) {
+          let token = await axios.get(`${BASE_URL}/braintree/token`, config);
+          setClientToken(token?.clientToken);
+        }
+      } catch (error) {
+        console.log(error);
       }
-    })();
+    };
+
+    fetchClientToken();
   }, [auth?.token]);
+
+  const updateAddress = async () => {
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.token}`,
+        },
+      };
+
+      const address = addressRef.current.value;
+      const { data } = await axios.post(
+        `${BASE_URL}/updateUser`,
+        { address },
+        config
+      );
+      if (data?.error) {
+        ErrorToast(data.error);
+      } else {
+        setAuth({ ...auth, user: data });
+        // Local storage update
+        let userDetails = getUserDetails();
+        userDetails = data.data; // Modify the address field
+        setUserDetails(userDetails);
+        SuccessToast("Address added");
+        setTimeout(() => {
+          window.location.reload();
+        }, 0);
+      }
+    } catch (error) {
+      ErrorToast("Address Add fail");
+    }
+  };
 
   const handleBuy = async () => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${auth?.token}`,
+        },
+      };
       const { nonce } = await instance.requestPaymentMethod();
-      await ProcessPaymentRequest(nonce, cart);
+      await axios.post(URL, { nonce, cart }, config);
       removeCartData();
-      setCart([])
+      setCart([]);
       SuccessToast("Payment successful");
       navigate("/order");
     } catch (error) {
@@ -46,7 +95,7 @@ const PaymentCard = () => {
   const cartTotal = () => {
     let total = 0;
     if (cart !== null && Array.isArray(cart)) {
-      cart.map((item) => {
+      cart?.map((item) => {
         total += item.price;
       });
     }
@@ -55,20 +104,25 @@ const PaymentCard = () => {
       currency: "USD",
     });
   };
-  
 
   return (
     <Fragment>
       <div className="pt-5">
         <h2 className="text-center">Payments Details</h2>
         <hr />
-        <h6>Total: {cartTotal()}</h6>
+        <div className="mb-3"></div>
+        {auth?.user?.address ? (
+          <>
+            <h6>Delivery address : {auth?.user?.address}</h6>
+          </>
+        ) : (
+          <div></div>
+        )}
+        <h6>Total : {cartTotal()}</h6>
         <div>
-          <div className="mt-3">
-            {!clientToken || !cart?.length ? (
-              <Link to="/login" className="btn btn-success" >login</Link>
-            ) : (
-              <>
+          {auth?.user?.address ? (
+            <>
+              <div>
                 <DropIn
                   options={{
                     authorization: clientToken,
@@ -76,7 +130,7 @@ const PaymentCard = () => {
                       flow: "vault",
                     },
                   }}
-                  onInstance={(instance) => setInstance(instance)}
+                  onInstance={setInstance}
                 />
                 <button
                   onClick={handleBuy}
@@ -85,9 +139,43 @@ const PaymentCard = () => {
                 >
                   Buy
                 </button>
-              </>
-            )}
-          </div>
+              </div>
+            </>
+          ) : (
+            <div className="mb-3">
+              {auth?.token ? (
+                <>
+                  <div className="py-2">
+                    <input
+                      placeholder="Enter Your Address"
+                      type="text"
+                      ref={addressRef}
+                    />
+                  </div>
+
+                  <button
+                    className="btn btn-outline-warning"
+                    onClick={updateAddress}
+                  >
+                    Add delivery address
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="btn btn-outline-danger mt-3"
+                    onClick={() =>
+                      navigate("/login", {
+                        state: "/cart",
+                      })
+                    }
+                  >
+                    Login to checkout
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Fragment>
@@ -95,12 +183,3 @@ const PaymentCard = () => {
 };
 
 export default PaymentCard;
-
-
-// <div 
-//               onClick={() =>
-//                 navigate("/login", {
-//                   state: "/cart",
-//                 })
-//               }
-//               className="btn btn-success" >Login</div>

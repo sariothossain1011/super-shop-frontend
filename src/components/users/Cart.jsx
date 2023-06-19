@@ -17,10 +17,10 @@ const Cart = () => {
     setCartData(myCart);
   };
 
-  if (cart.length > 0) {
+  if (cart !== null && Array.isArray(cart) && cart.length > 0 ) {
     return (
       <Fragment>
-        <div className="container-fluid bg-lightgray">
+        <div className="container-fluid bg-lightgray pt-4 mt-5">
           <div className="row">
             <div className="col-md-12">
               <div className="row">
@@ -37,20 +37,22 @@ const Cart = () => {
                                 className="img-fluid rounded-start w-100 h-100"
                               />
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-md-5">
                               <div className="card-body">
                                 <h5 className="card-title">{item.title}</h5>
                                 <span className="card-text">
                                   {item.description}
                                 </span>
-                                <p className="card-text"> Price : {item.price}</p>
-                                <span className="card-text">
-                                </span>
+                                <p className="card-text">
+                                  {" "}
+                                  Price : {item.price}
+                                </p>
+                                <span className="card-text"></span>
                               </div>
                             </div>
-                            <div className="col-md-2 ">
+                            <div className="col-md-3 mt-5">
                               <button
-                                className="btn btn-warning"
+                                className="btn btn-success"
                                 onClick={() => removeFromCart(item._id)}
                               >
                                 Remove

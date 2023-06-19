@@ -32,7 +32,7 @@ const MasterLayout = () => {
   return (
     <Fragment>
       <div>
-        <Navbar color="dark" dark expand="md" className="">
+        <Navbar color="dark" dark expand="md" className="fixed-top">
           <NavbarBrand className=" text-white fs-4" href="/">
             SUPPER SHOP
           </NavbarBrand>
