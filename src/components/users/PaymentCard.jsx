@@ -125,7 +125,8 @@ const PaymentCard = () => {
         )}
         <h6>Total : {cartTotal()}</h6>
         <div>
-          {auth?.user?.address && auth?.token ? (
+          {/* {auth?.user?.address && auth?.token ? ( */}
+          {clientToken.length > 0 ? (
             <>
               <DropIn
                 options={{
