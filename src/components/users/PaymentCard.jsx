@@ -1,4 +1,5 @@
 import axios from "axios";
+import DropIn from "braintree-web-drop-in-react";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { BASE_URL } from "../../helper/config";
@@ -10,7 +11,6 @@ import {
   setUserDetails,
 } from "../../helper/SessionHelper";
 import { useNavigate } from "react-router-dom";
-import DropIn from "braintree-web-drop-in-react";
 
 const PaymentCard = () => {
   let addressRef = useRef();
@@ -18,6 +18,7 @@ const PaymentCard = () => {
   const navigate = useNavigate();
   const [auth, setAuth] = useAuth();
   const [clientToken, setClientToken] = useState("");
+  // alert(clientToken)
   const [instance, setInstance] = useState("");
   const [cart, setCart] = useCart();
 
@@ -32,7 +33,7 @@ const PaymentCard = () => {
 
         if (auth?.token) {
           let token = await axios.get(`${BASE_URL}/braintree/token`, config);
-          setClientToken(token?.clientToken);
+          setClientToken(token?.data?.data?.clientToken);
         }
       } catch (error) {
         console.log(error);
@@ -82,7 +83,11 @@ const PaymentCard = () => {
         },
       };
       const { nonce } = await instance.requestPaymentMethod();
-      await axios.post(URL, { nonce, cart }, config);
+      await axios.post(
+        `${BASE_URL}/braintree/payment`,
+        { nonce, cart },
+        config
+      );
       removeCartData();
       setCart([]);
       SuccessToast("Payment successful");
@@ -111,7 +116,7 @@ const PaymentCard = () => {
         <h2 className="text-center">Payments Details</h2>
         <hr />
         <div className="mb-3"></div>
-        {auth?.user?.address ? (
+        {auth?.token ? (
           <>
             <h6>Delivery address : {auth?.user?.address}</h6>
           </>
@@ -120,7 +125,7 @@ const PaymentCard = () => {
         )}
         <h6>Total : {cartTotal()}</h6>
         <div>
-          {auth?.user?.address ? (
+          {auth?.user?.address && auth?.token ? (
             <>
               <DropIn
                 options={{
