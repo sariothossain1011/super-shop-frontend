@@ -122,7 +122,6 @@ const PaymentCard = () => {
         <div>
           {auth?.user?.address ? (
             <>
-              <div>
                 <DropIn
                   options={{
                     authorization: clientToken,
@@ -139,7 +138,6 @@ const PaymentCard = () => {
                 >
                   Buy
                 </button>
-              </div>
             </>
           ) : (
             <div className="mb-3">
