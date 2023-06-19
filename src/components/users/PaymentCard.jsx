@@ -3,7 +3,6 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { BASE_URL } from "../../helper/config";
 import { ErrorToast, SuccessToast } from "../../helper/FormHelper";
-import DropIn from "braintree-web-drop-in-react";
 import { useCart } from "../context/CartContext";
 import {
   getUserDetails,
@@ -11,6 +10,7 @@ import {
   setUserDetails,
 } from "../../helper/SessionHelper";
 import { useNavigate } from "react-router-dom";
+import DropIn from "braintree-web-drop-in-react";
 
 const PaymentCard = () => {
   let addressRef = useRef();
@@ -122,22 +122,23 @@ const PaymentCard = () => {
         <div>
           {auth?.user?.address ? (
             <>
-                <DropIn
-                  options={{
-                    authorization: clientToken,
-                    paypal: {
-                      flow: "vault",
-                    },
-                  }}
-                  onInstance={setInstance}
-                />
-                <button
-                  onClick={handleBuy}
-                  className="btn btn-primary col-12 mt-2"
-                  disabled={!auth?.user || !instance}
-                >
-                  Buy
-                </button>
+              <DropIn
+                options={{
+                  authorization: clientToken,
+                  paypal: {
+                    flow: "vault",
+                  },
+                }}
+                onInstance={setInstance}
+              />
+
+              <button
+                onClick={handleBuy}
+                className="btn btn-primary col-12 mt-2"
+                disabled={!auth?.user || !instance}
+              >
+                Buy
+              </button>
             </>
           ) : (
             <div className="mb-3">

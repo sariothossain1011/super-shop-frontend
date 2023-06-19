@@ -50,7 +50,7 @@ const Cart = () => {
                                 <span className="card-text"></span>
                               </div>
                             </div>
-                            <div className="col-md-3 mt-5">
+                            <div className="col-md-3 mt-3">
                               <button
                                 className="btn btn-success"
                                 onClick={() => removeFromCart(item._id)}
